@@ -1,5 +1,9 @@
 package com.appsdeveloperblog.app.ws.ui.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.appsdeveloperblog.app.ws.ui.model.request.UpdateUserDetailsRequestModel;
 import com.appsdeveloperblog.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
 
@@ -22,6 +27,8 @@ import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
 @RequestMapping("/users") //http://localhost:8080/users
 public class UserController {
 
+	Map<String, UserRest> users;
+	
 	@GetMapping
 	public String getUsers(@RequestParam(value="page", defaultValue="1") int page,
 						   @RequestParam(value="limit", defaultValue="50") int limit,
@@ -37,12 +44,25 @@ public class UserController {
 					})
 	public ResponseEntity<UserRest> getUser(@PathVariable String userId)
 	{
-		UserRest returnValue = new UserRest();
+		/* perv Section7:
+		 * 
+		 * UserRest returnValue = new UserRest();
 		returnValue.setFirstName("Myagmardorj");
 		returnValue.setLastName("Ts.");
 		returnValue.setEmail("tsmigaa@gmail.com");
 		
 		return new ResponseEntity<UserRest>(returnValue, HttpStatus.OK);
+		*/
+		
+		if ( users.containsKey(userId) )
+		{
+			return new ResponseEntity<>(users.get(userId), HttpStatus.OK);
+		}
+		else
+		{
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		
 	}
 	
 	@PostMapping(
@@ -61,18 +81,39 @@ public class UserController {
 		returnValue.setLastName(userDetails.getLastName());
 		returnValue.setEmail(userDetails.getEmail());
 		
+		String userId = UUID.randomUUID().toString();
+		returnValue.setUserId(userId);
+		
+		if ( users == null ) users = new HashMap<>();
+		users.put(userId, returnValue);
+		
 		return new ResponseEntity<UserRest>(returnValue, HttpStatus.OK);
 	}
 	
-	@PutMapping
-	public String updateUser()
+	@PutMapping(path="/{userId}", 
+			consumes = { 
+			MediaType.APPLICATION_XML_VALUE, 
+			MediaType.APPLICATION_JSON_VALUE 
+			}, 
+			produces = { 
+					MediaType.APPLICATION_XML_VALUE, 
+					MediaType.APPLICATION_JSON_VALUE 
+					})
+	public UserRest updateUser(@PathVariable String userId, @Valid @RequestBody UpdateUserDetailsRequestModel userDetails )
 	{
-		return "update user was called";
+		UserRest storedUserDetails = users.get(userId);
+		storedUserDetails.setFirstName(userDetails.getFirstName());
+		storedUserDetails.setLastName(userDetails.getLastName());
+		
+		users.put(userId, storedUserDetails);
+		
+		return storedUserDetails;
 	}
 	
-	@DeleteMapping
-	public String deleteUser()
+	@DeleteMapping(path="/{id}")
+	public ResponseEntity<Void> deleteUser(@PathVariable String id)
 	{
-		return "delete user was called";
+		users.remove(id);
+		return ResponseEntity.noContent().build();
 	}
 }
