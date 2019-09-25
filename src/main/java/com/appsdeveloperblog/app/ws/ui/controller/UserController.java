@@ -54,6 +54,11 @@ public class UserController {
 		return new ResponseEntity<UserRest>(returnValue, HttpStatus.OK);
 		*/
 		
+		String firstName = null;
+		//
+		//
+		int firstNameLength = firstName.length();
+		
 		if ( users.containsKey(userId) )
 		{
 			return new ResponseEntity<>(users.get(userId), HttpStatus.OK);
