@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.appsdeveloperblog.app.ws.exceptions.UserServiceException;
+//import com.appsdeveloperblog.app.ws.exceptions.UserServiceException;
 import com.appsdeveloperblog.app.ws.service.UserService;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDto;
 import com.appsdeveloperblog.app.ws.ui.model.request.UserDetailsRequestModel;
-import com.appsdeveloperblog.app.ws.ui.model.response.ErrorMessages;
+//import com.appsdeveloperblog.app.ws.ui.model.response.ErrorMessages;
 import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
 
 @RestController
@@ -58,10 +58,23 @@ public class UserController {
 		return returnValue;
 	}
 	
-	@PutMapping
-	public String updateUser()
+	@PutMapping (path="/{id}",
+			consumes = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+			produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+			)
+	public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails)
 	{
-		return "update user was called";
+		UserRest returnValue = new UserRest();
+		
+		if(userDetails.getFirstName().isEmpty()) throw new NullPointerException("The object is null");
+		
+		UserDto userDto = new UserDto();
+		BeanUtils.copyProperties(userDetails, userDto);
+		
+		UserDto updateUser = userService.updateUser(id, userDto);
+		BeanUtils.copyProperties(updateUser, returnValue);
+		
+		return returnValue;
 	}
 
 	@DeleteMapping
