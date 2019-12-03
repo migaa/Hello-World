@@ -2,7 +2,7 @@ package com.appsdeveloperblog.app.ws.ui.model.response;
 
 public class OperationStatusModel {
 	private String operationResult;
-	private String operatinName;
+	private String operationName;
 
 	public String getOperationResult() {
 		return operationResult;
@@ -12,12 +12,12 @@ public class OperationStatusModel {
 		this.operationResult = operationResult;
 	}
 
-	public String getOperatinName() {
-		return operatinName;
+	public String getOperationName() {
+		return operationName;
 	}
 
-	public void setOperatinName(String operatinName) {
-		this.operatinName = operatinName;
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
 	}
 
 }

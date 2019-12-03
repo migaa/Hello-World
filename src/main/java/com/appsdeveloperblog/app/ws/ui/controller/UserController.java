@@ -110,7 +110,7 @@ public class UserController {
 	public OperationStatusModel deleteUser(@PathVariable String id)
 	{
 		OperationStatusModel returnValue = new OperationStatusModel();
-		returnValue.setOperatinName(RequestOperationName.DELETE.name());
+		returnValue.setOperationName(RequestOperationName.DELETE.name());
 		
 		userService.deleteUser(id); 
 		
@@ -189,6 +189,29 @@ public class UserController {
 		addressesRest.add(addressesLink);
 				
 		return new Resource<>(addressesRest);
+	}
+	
+	
+	/*
+	 * http://localhost:8080/mobile-app-ws/users/email-verification?token=sdfsdf
+	 * */
+	@GetMapping(path="/email-verification", produces = { MediaType.APPLICATION_XML_VALUE, 
+			MediaType.APPLICATION_JSON_VALUE})
+	public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token)
+	{
+		OperationStatusModel returnValue = new OperationStatusModel();
+		returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+		
+		boolean isVerified = userService.verifyEmailToken(token);
+		
+		if(isVerified) {
+			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		}
+		else {
+			returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+		}
+		
+		return returnValue;
 	}
 	
 	
