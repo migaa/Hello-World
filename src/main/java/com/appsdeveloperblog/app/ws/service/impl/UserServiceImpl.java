@@ -61,7 +61,9 @@ public class UserServiceImpl implements UserService {
 		String publicUserId = utils.generateUserId(30);
 		userEntity.setUserId(publicUserId);
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-
+		userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
+		userEntity.setEmailVerificationStatus(false);
+		
 		UserEntity storedUserDetails = userRepository.save(userEntity);
 
 		//UserDto returnValue = new UserDto();
@@ -91,7 +93,13 @@ public class UserServiceImpl implements UserService {
 
 		if (userEntity == null)
 			throw new UsernameNotFoundException(email);
-		return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
+		
+		return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(),
+				userEntity.getEmailVerificationStatus(),
+				true, true, true, new ArrayList<>()
+				);
+		
+		//return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
 	}
 
 	@Override
